@@ -95,7 +95,7 @@ except ImportError as e:
 @st.cache_data
 def load_sample_data():
     try:
-        data_path = os.path.join(parent_dir, "data", "shl_assessments_first_row.csv")
+        data_path = os.path.join(parent_dir, "data", "shl_assessments.csv")
         sample_data = pd.read_csv(data_path)
         return sample_data
     except Exception as e:
@@ -182,6 +182,38 @@ def main():
         with advanced_options:
             enhanced_mode = st.checkbox("Use Enhanced Mode (GPT augmented)", value=True)
             top_k = st.slider("Number of recommendations", 1, 20, 5)
+        
+        # Admin Functions
+        admin_section = st.expander("Admin Functions", expanded=False)
+        with admin_section:
+            st.markdown("### Build Embeddings")
+            st.write("Upload assessment data and build embeddings in the vector store.")
+            
+            data_file = st.file_uploader("Upload SHL Assessments CSV", type="csv")
+            
+            if st.button("Build Embeddings", use_container_width=True):
+                if data_file is not None:
+                    with st.spinner("Building embeddings... This may take a while"):
+                        try:
+                            # Save the uploaded file temporarily
+                            temp_file_path = os.path.join(os.getcwd(), "temp_data.csv")
+                            with open(temp_file_path, "wb") as f:
+                                f.write(data_file.getbuffer())
+                            
+                            # Import the build_embeddings function
+                            from build_embeddings import build_embeddings
+                            
+                            # Build the embeddings
+                            build_embeddings(temp_file_path, "shl_assessments")
+                            
+                            # Remove the temp file
+                            os.remove(temp_file_path)
+                            
+                            st.success("Embeddings built successfully!")
+                        except Exception as e:
+                            st.error(f"Error building embeddings: {e}")
+                else:
+                    st.warning("Please upload a CSV file first.")
         
         st.divider()
         st.markdown("### About")

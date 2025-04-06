@@ -10,6 +10,7 @@ A recommendation system that suggests the most suitable SHL assessments based on
 - **Semantic Search**: Uses OpenAI embeddings for accurate semantic matching
 - **Enhanced Mode**: Utilizes GPT for better query understanding and matching
 - **Streamlit Web Interface**: Easy-to-use UI for interacting with the system
+- **Cloud Vector Storage**: Option to use Qdrant Cloud for vector storage and retrieval (faster deployments)
 
 ## System Architecture
 
@@ -17,7 +18,7 @@ The system uses a Retrieval-Augmented Generation (RAG) approach with the followi
 
 1. **Data Processing**: Cleans and combines assessment attributes into a comprehensive text field
 2. **Embedding & Storage**: Generates embeddings using OpenAI's text-embedding-ada-002 model
-3. **Vector Storage**: Uses Qdrant for efficient similarity search
+3. **Vector Storage**: Uses Qdrant for efficient similarity search (local or cloud)
 4. **Retrieval System**:
    - Basic Mode: Converts the query to an embedding and performs similarity search
    - Enhanced Mode: Uses GPT to better understand the query before similarity search
@@ -35,9 +36,14 @@ The system uses a Retrieval-Augmented Generation (RAG) approach with the followi
    ```
    pip install -r requirements.txt
    ```
-4. Create a `.env` file with your OpenAI API key:
+4. Create a `.env` file with your API keys:
+
    ```
-   OPENAI_API_KEY=your_api_key_here
+   OPENAI_API_KEY=your_openai_api_key_here
+
+   # Optional: Qdrant Cloud credentials (if using cloud storage)
+   QDRANT_URL=https://your-cluster-url.qdrant.io
+   QDRANT_API_KEY=your_qdrant_api_key_here
    ```
 
 ## Usage
@@ -63,6 +69,20 @@ This will start a web server at http://localhost:8501 where you can:
 1. Enter a job description or URL
 2. Set filtering options
 3. Get assessment recommendations
+
+### Cloud Deployment
+
+When deploying to Streamlit Cloud:
+
+1. Add your API keys as secrets in the Streamlit Cloud dashboard:
+
+   ```
+   OPENAI_API_KEY = "your-openai-api-key"
+   QDRANT_URL = "https://your-cluster-url.qdrant.io"
+   QDRANT_API_KEY = "your-qdrant-api-key"
+   ```
+
+2. Use Qdrant Cloud for vector storage to speed up deployment and avoid local storage issues.
 
 ### Command Line Interface
 

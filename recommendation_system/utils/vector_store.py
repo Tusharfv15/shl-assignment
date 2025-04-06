@@ -2,6 +2,7 @@ import os
 from typing import List, Dict, Optional, Any, Union
 from pathlib import Path
 import numpy as np
+import streamlit as st
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
 from qdrant_client.http.models import Filter, FieldCondition, MatchValue, MatchAny
@@ -17,12 +18,36 @@ class QdrantVectorStore:
             collection_name: Name of the collection to use
             vector_size: Size of the embedding vectors
         """
-        # Create local storage directory if it doesn't exist
-        data_dir = Path(os.path.join(os.path.dirname(os.path.dirname(__file__)), "qdrant_data"))
-        data_dir.mkdir(parents=True, exist_ok=True)
+        # Try to get Qdrant Cloud credentials from environment or secrets
+        qdrant_url = None
+        qdrant_api_key = None
         
-        # Initialize Qdrant client (local mode)
-        self.client = QdrantClient(path=str(data_dir))
+        # Check environment variables
+        if "QDRANT_URL" in os.environ and "QDRANT_API_KEY" in os.environ:
+            qdrant_url = os.environ["QDRANT_URL"]
+            qdrant_api_key = os.environ["QDRANT_API_KEY"]
+        # Check Streamlit secrets
+        elif hasattr(st, 'secrets') and "QDRANT_URL" in st.secrets and "QDRANT_API_KEY" in st.secrets:
+            qdrant_url = st.secrets["QDRANT_URL"]
+            qdrant_api_key = st.secrets["QDRANT_API_KEY"]
+        
+        # Initialize Qdrant client - cloud if credentials exist, local otherwise
+        if qdrant_url and qdrant_api_key:
+            # Connect to Qdrant Cloud
+            self.client = QdrantClient(
+                url=qdrant_url,
+                api_key=qdrant_api_key
+            )
+            self.using_cloud = True
+            print("Using Qdrant Cloud for vector storage")
+        else:
+            # Fallback to local mode
+            data_dir = Path(os.path.join(os.path.dirname(os.path.dirname(__file__)), "qdrant_data"))
+            data_dir.mkdir(parents=True, exist_ok=True)
+            self.client = QdrantClient(path=str(data_dir))
+            self.using_cloud = False
+            print("Using local storage for vectors (Qdrant Cloud credentials not found)")
+        
         self.collection_name = collection_name
         self.vector_size = vector_size
         
