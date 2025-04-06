@@ -1,10 +1,11 @@
-openai
-numpy
 pandas
-scikit-learn
+numpy
 python-dotenv
-qdrant-client
 tqdm
-streamlit
+openai
+qdrant-client
 requests
-protobuf
+beautifulsoup4
+fastapi
+uvicorn
+pydantic

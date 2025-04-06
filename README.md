@@ -106,6 +106,11 @@ recommendation_system/
 4. **Result Ranking**: Return the most relevant assessments
 5. **Enhanced Results** (optional): Use GPT to further refine recommendations
 
+## Final Evaluation Results
+1) **Test Queries**: Refer `recommendation_system/data/sample_test_queries.json`
+2) **Mean Recall@5**: `0.6765`
+3) **Mean MAP@5**: `8.8809`
+
 ### Deployment Workflow
 
 1. **Local Development**: Run the app locally with `streamlit run app.py`
