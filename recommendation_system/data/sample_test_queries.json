@@ -1,0 +1,39 @@
+[
+  {
+    "query": "We need an account manager who can maintain client relationships and manage projects",
+    "relevant_assessments": [
+      "Account Manager Solution",
+      "Project Management Solution"
+    ],
+    "description": "Query for account management positions"
+  },
+  {
+    "query": "Looking for someone with leadership skills who can direct a team of sales professionals",
+    "relevant_assessments": ["Sales Manager Solution", "Leadership Solution"],
+    "description": "Query for sales leadership roles"
+  },
+  {
+    "query": "Need a customer service representative who can handle customer inquiries and resolve issues",
+    "relevant_assessments": [
+      "Customer Service Solution",
+      "Call Center Solution"
+    ],
+    "description": "Query for customer service positions"
+  },
+  {
+    "query": "Seeking a technical project manager with strong organizational skills",
+    "relevant_assessments": [
+      "Project Management Solution",
+      "Technical Professional Solution"
+    ],
+    "description": "Query for technical project management"
+  },
+  {
+    "query": "Need a data analyst who can interpret complex data and create reports",
+    "relevant_assessments": [
+      "Data Analyst Solution",
+      "Technical Professional Solution"
+    ],
+    "description": "Query for data analysis positions"
+  }
+]
