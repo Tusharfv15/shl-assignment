@@ -1,4 +1,13 @@
 import streamlit as st
+
+# IMPORTANT: set_page_config must be the first Streamlit command
+st.set_page_config(
+    page_title="SHL Assessment Recommender",
+    page_icon="📋",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
 import sys
 import os
 import pandas as pd
@@ -10,38 +19,83 @@ parent_dir = str(Path(__file__).resolve().parent.parent)
 if parent_dir not in sys.path:
     sys.path.append(parent_dir)
 
+# This helps find modules in Streamlit Cloud
+sys.path.append("/mount/src/shl-assignment")
+
 # Setup environment before other imports
 try:
     from dotenv import load_dotenv
     load_dotenv()  # Load environment variables from .env file
 except ImportError:
     # If python-dotenv isn't available, set up OpenAI API key directly
-    if "OPENAI_API_KEY" not in os.environ:
+    if "OPENAI_API_KEY" not in os.environ and hasattr(st, 'secrets') and "OPENAI_API_KEY" in st.secrets:
+        os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
+    elif "OPENAI_API_KEY" not in os.environ:
         st.error("OpenAI API key not found. Please add it to your environment variables or .streamlit/secrets.toml")
         st.stop()
+
+# Debug information - moved after set_page_config
+debug_expander = st.sidebar.expander("Debug Info", expanded=False)
+with debug_expander:
+    st.write(f"Current working directory: {os.getcwd()}")
+    st.write(f"Python path: {sys.path}")
 
 # Import our recommender after env setup
 try:
     from main import SHLRecommender
 except ImportError as e:
     st.error(f"Error importing SHLRecommender: {e}")
-    st.error(f"Current path: {os.getcwd()}")
-    st.error(f"Python path: {sys.path}")
-    st.stop()
-
-# Page configuration
-st.set_page_config(
-    page_title="SHL Assessment Recommender",
-    page_icon="📋",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
+    st.error(f"Trying absolute import...")
+    try:
+        from recommendation_system.main import SHLRecommender
+    except ImportError as e2:
+        st.error(f"Still failed: {e2}")
+        try:
+            # Try one more approach by dynamically finding the main module
+            import importlib.util
+            import glob
+            
+            # Look for main.py in nearby directories
+            main_files = glob.glob(os.path.join(os.getcwd(), "**/main.py"), recursive=True)
+            if main_files:
+                # Use the first main.py found
+                debug_expander.write(f"Found main.py at: {main_files[0]}")
+                
+                # Load it as a module
+                spec = importlib.util.spec_from_file_location("main_module", main_files[0])
+                main_module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(main_module)
+                
+                # Get the SHLRecommender class
+                SHLRecommender = main_module.SHLRecommender
+            else:
+                st.error("Could not find main.py in any nearby directories")
+                st.stop()
+        except Exception as e3:
+            st.error(f"All import attempts failed: {e3}")
+            st.error("Falling back to standalone mode...")
+            
+            # Fall back to standalone implementation 
+            from streamlit_app.standalone_app import recommend, recommend_from_url
+            
+            # Create a minimal SHLRecommender that uses the standalone functions
+            class FallbackSHLRecommender:
+                def __init__(self):
+                    pass
+                
+                def recommend(self, query, top_k=5, enhanced=False, filters=None):
+                    return recommend(query, top_k, enhanced, filters)
+                
+                def recommend_from_url(self, url, top_k=5, enhanced=False, filters=None):
+                    return recommend_from_url(url, top_k, enhanced, filters)
+            
+            SHLRecommender = FallbackSHLRecommender
 
 # Load sample data to show in the interface
 @st.cache_data
 def load_sample_data():
     try:
-        data_path = os.path.join(parent_dir, "data", "shl_assessments.csv")
+        data_path = os.path.join(parent_dir, "data", "shl_assessments_first_row.csv")
         sample_data = pd.read_csv(data_path)
         return sample_data
     except Exception as e:
