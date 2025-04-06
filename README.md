@@ -66,6 +66,40 @@ The resulting dataset (`shl_assessments.csv`) is stored in the `data` folder ins
 - **requests**: For fetching web content from URLs
 - **BeautifulSoup**: For parsing HTML and extracting job descriptions
 
+## Final Evaluation Results
+1) **Test Queries**: Refer `recommendation_system/data/sample_test_queries.json`
+2) **Mean Recall@5**: `0.6765`
+3) **Mean MAP@5**: `8.8809`
+4)  ![Screenshot 2025-04-06 215212](https://github.com/user-attachments/assets/fbb99c70-ba66-4065-9c00-4d2c8459d3d1)
+
+## Workflow
+
+### Data Processing Workflow
+
+1. **Data Collection**: Scrape assessment data from SHL catalog using `shl_scraper.py`
+2. **Data Ingestion**: Load assessment data from the generated CSV file
+3. **Text Preparation**: Clean and combine assessment data into searchable text
+4. **Embedding Generation**: Create vector embeddings using OpenAI's API
+5. **Vector Storage**: Store vectors and metadata in Qdrant Cloud
+
+### Recommendation Workflow
+
+1. **Query Processing**: Vectorize the user's job description query (from text or URL)
+2. **Vector Search**: Find semantically similar assessments in Qdrant
+3. **Filter Application**: Apply user-specified filters (remote testing, adaptive testing, test types)
+4. **Result Ranking**: Return the most relevant assessments
+5. **Enhanced Results** (optional): Use GPT to further refine recommendations
+
+
+
+
+### Deployment Workflow
+
+1. **Local Development**: Run the app locally with `streamlit run app.py`
+2. **Cloud Deployment**: Deploy to Streamlit Cloud with environment secrets
+3. **Vector Database**: Qdrant Cloud hosts the vector database separately from the app
+4. **Admin Functions**: Build or update embeddings directly from the Streamlit interface
+
 ## Folder Structure
 
 ```
@@ -87,36 +121,6 @@ recommendation_system/
 ├── test_recommender.py       # Test scripts
 └── shl_scraper.py            # Script for scraping SHL assessment catalog
 ```
-
-## Workflow
-
-### Data Processing Workflow
-
-1. **Data Collection**: Scrape assessment data from SHL catalog using `shl_scraper.py`
-2. **Data Ingestion**: Load assessment data from the generated CSV file
-3. **Text Preparation**: Clean and combine assessment data into searchable text
-4. **Embedding Generation**: Create vector embeddings using OpenAI's API
-5. **Vector Storage**: Store vectors and metadata in Qdrant Cloud
-
-### Recommendation Workflow
-
-1. **Query Processing**: Vectorize the user's job description query (from text or URL)
-2. **Vector Search**: Find semantically similar assessments in Qdrant
-3. **Filter Application**: Apply user-specified filters (remote testing, adaptive testing, test types)
-4. **Result Ranking**: Return the most relevant assessments
-5. **Enhanced Results** (optional): Use GPT to further refine recommendations
-
-## Final Evaluation Results
-1) **Test Queries**: Refer `recommendation_system/data/sample_test_queries.json`
-2) **Mean Recall@5**: `0.6765`
-3) **Mean MAP@5**: `8.8809`
-
-### Deployment Workflow
-
-1. **Local Development**: Run the app locally with `streamlit run app.py`
-2. **Cloud Deployment**: Deploy to Streamlit Cloud with environment secrets
-3. **Vector Database**: Qdrant Cloud hosts the vector database separately from the app
-4. **Admin Functions**: Build or update embeddings directly from the Streamlit interface
 
 ## Getting Started
 
