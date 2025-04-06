@@ -66,6 +66,15 @@ The resulting dataset (`shl_assessments.csv`) is stored in the `data` folder ins
 - **requests**: For fetching web content from URLs
 - **BeautifulSoup**: For parsing HTML and extracting job descriptions
 
+## API-Endpoint result
+- git clone the app
+- pip install -r requirements.txt
+- python run_api.py
+- server running on `localhost:8000`
+- Result on Postman
+  ![image](https://github.com/user-attachments/assets/bc6715c9-7258-4fe3-947f-bd7fd20d2e7b)
+
+
 ## Final Evaluation Results
 1) **Test Queries**: Refer `recommendation_system/data/sample_test_queries.json`
 2) **Mean Recall@5**: `0.6765`
