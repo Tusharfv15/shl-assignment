@@ -45,6 +45,18 @@ The system provides two input methods - direct text entry or URL to a job postin
 
 This feature allows users to simply paste a job posting URL rather than manually copying and pasting content, making the workflow more efficient. The system handles extraction from popular job posting sites like LinkedIn, Indeed, and company career pages.
 
+### SHL Catalog Scraper
+
+The project includes a custom scraper (`shl_scraper.py`) that extracts assessment data directly from the SHL product catalog:
+
+1. **Automated Data Collection**: Collects comprehensive information about SHL assessments
+2. **Metadata Extraction**: Extracts key details like assessment types, remote testing support, and adaptive capabilities
+3. **Description Processing**: Captures detailed descriptions and specifications for each assessment
+4. **Data Formatting**: Organizes the scraped data into a structured CSV format
+5. **Complete Coverage**: Includes both Individual Test Solutions and Pre-packaged Job Solutions
+
+The resulting dataset (`shl_assessments.csv`) is stored in the `data` folder inside the `recommendation system folder` and can also be found in the root directory of this project and serves as the foundation for the recommendation system. This approach ensures the system has accurate and up-to-date information about SHL's assessment offerings without manual data entry.
+
 ### Additional Libraries
 
 - **pandas**: For data processing and manipulation
@@ -59,6 +71,7 @@ This feature allows users to simply paste a job posting URL rather than manually
 ```
 recommendation_system/
 ├── data/                     # Assessment data files
+│   └── shl_assessments.csv   # Scraped assessment data
 ├── models/                   # Recommender model implementations
 ├── streamlit_app/            # Streamlit web application
 │   ├── app.py                # Main Streamlit application
@@ -71,17 +84,19 @@ recommendation_system/
 ├── evaluate_recommender.py   # Evaluation scripts
 ├── main.py                   # Core recommendation system
 ├── requirements.txt          # Project dependencies
-└── test_recommender.py       # Test scripts
+├── test_recommender.py       # Test scripts
+└── shl_scraper.py            # Script for scraping SHL assessment catalog
 ```
 
 ## Workflow
 
 ### Data Processing Workflow
 
-1. **Data Ingestion**: Load assessment data from CSV files
-2. **Text Preparation**: Clean and combine assessment data into searchable text
-3. **Embedding Generation**: Create vector embeddings using OpenAI's API
-4. **Vector Storage**: Store vectors and metadata in Qdrant Cloud
+1. **Data Collection**: Scrape assessment data from SHL catalog using `shl_scraper.py`
+2. **Data Ingestion**: Load assessment data from the generated CSV file
+3. **Text Preparation**: Clean and combine assessment data into searchable text
+4. **Embedding Generation**: Create vector embeddings using OpenAI's API
+5. **Vector Storage**: Store vectors and metadata in Qdrant Cloud
 
 ### Recommendation Workflow
 
