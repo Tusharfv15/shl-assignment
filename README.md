@@ -70,7 +70,7 @@ The resulting dataset (`shl_assessments.csv`) is stored in the `data` folder ins
 1) **Test Queries**: Refer `recommendation_system/data/sample_test_queries.json`
 2) **Mean Recall@5**: `0.6765`
 3) **Mean MAP@5**: `8.8809`
-4)  ![Screenshot 2025-04-06 215212](https://github.com/user-attachments/assets/fbb99c70-ba66-4065-9c00-4d2c8459d3d1)
+![Screenshot 2025-04-06 215212](https://github.com/user-attachments/assets/fbb99c70-ba66-4065-9c00-4d2c8459d3d1)
 
 ## Workflow
 
