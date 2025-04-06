@@ -10,8 +10,24 @@ parent_dir = str(Path(__file__).resolve().parent.parent)
 if parent_dir not in sys.path:
     sys.path.append(parent_dir)
 
-# Import our recommender
-from main import SHLRecommender
+# Setup environment before other imports
+try:
+    from dotenv import load_dotenv
+    load_dotenv()  # Load environment variables from .env file
+except ImportError:
+    # If python-dotenv isn't available, set up OpenAI API key directly
+    if "OPENAI_API_KEY" not in os.environ:
+        st.error("OpenAI API key not found. Please add it to your environment variables or .streamlit/secrets.toml")
+        st.stop()
+
+# Import our recommender after env setup
+try:
+    from main import SHLRecommender
+except ImportError as e:
+    st.error(f"Error importing SHLRecommender: {e}")
+    st.error(f"Current path: {os.getcwd()}")
+    st.error(f"Python path: {sys.path}")
+    st.stop()
 
 # Page configuration
 st.set_page_config(
