@@ -1,6 +1,113 @@
 # SHL Assessment Recommender System
 
-A recommendation system that suggests the most suitable SHL assessments based on job descriptions or requirements.
+A semantic search and recommendation system that helps match job requirements with appropriate SHL assessment tools.
+
+## Overview
+
+This system uses OpenAI's embedding models to vectorize SHL assessment descriptions and then uses vector similarity search to find the most relevant assessments for a given job description or requirement query.
+
+## Key Features
+
+- **Semantic Search**: Find assessments based on meaning, not just keywords
+- **Filtering**: Filter assessments by remote testing support, adaptive/IRT capabilities, and test types
+- **Enhanced Recommendations**: Option to use GPT to refine recommendations (when enabled)
+- **Admin Functions**: Build embeddings directly from the Streamlit interface
+- **Qdrant Cloud Integration**: Store vectors in a managed cloud service for better deployment
+
+## Setting Up Qdrant Cloud
+
+### 1. Create a Qdrant Cloud Account
+
+- Go to [https://cloud.qdrant.io/](https://cloud.qdrant.io/)
+- Sign up for an account
+- Create a new cluster (the free tier is sufficient for small to medium datasets)
+- Get your cluster URL and API key
+
+### 2. Configure Environment Variables
+
+Add your Qdrant Cloud credentials to the `.env` file or Streamlit secrets:
+
+```
+OPENAI_API_KEY=your_openai_api_key
+QDRANT_URL=https://your-cluster-id.region.gcp.cloud.qdrant.io
+QDRANT_API_KEY=your_qdrant_api_key
+```
+
+### 3. Create a Collection
+
+The system will automatically create a collection named "shl_assessments" when you build embeddings. If you want to manually create a collection:
+
+```python
+from qdrant_client import QdrantClient
+from qdrant_client.http.models import Distance, VectorParams
+
+client = QdrantClient(
+    url="https://your-cluster-id.region.gcp.cloud.qdrant.io",
+    api_key="your_qdrant_api_key",
+)
+
+client.recreate_collection(
+    collection_name="shl_assessments",
+    vectors_config=VectorParams(size=1536, distance=Distance.COSINE),
+)
+```
+
+## Running Locally
+
+1. Install dependencies:
+
+   ```
+   pip install -r requirements.txt
+   ```
+
+2. Build embeddings:
+
+   ```
+   python build_embeddings.py --data-file data/your_assessments.csv
+   ```
+
+3. Run the Streamlit app:
+   ```
+   cd streamlit_app
+   streamlit run app.py
+   ```
+
+## Deploying to Streamlit Cloud
+
+1. Fork/clone this repository
+2. Add the following secrets in the Streamlit Cloud dashboard:
+   - `OPENAI_API_KEY`
+   - `QDRANT_URL`
+   - `QDRANT_API_KEY`
+3. Set the main file path to: `recommendation_system/streamlit_app/app.py`
+4. Deploy the app
+5. Use the Admin Functions in the sidebar to upload your assessment data and build embeddings
+
+## Using the Admin Interface
+
+1. In the Streamlit app sidebar, expand the "Admin Functions" section
+2. Upload your SHL assessments CSV file
+3. Click "Build Embeddings" to process the data and store it in Qdrant Cloud
+4. Once complete, you can use the search functionality to find assessments
+
+## Files and Components
+
+- `build_embeddings.py` - Script for creating and storing assessment embeddings
+- `main.py` - Core recommendation logic and SHLRecommender class
+- `streamlit_app/app.py` - Streamlit web interface
+- `utils/` - Helper functions for data processing, vectorization, and vector storage
+- `models/` - Recommendation model implementations
+- `data/` - Sample assessment data
+
+## Why Qdrant Cloud?
+
+Qdrant Cloud offers several advantages for this application:
+
+1. **Persistent Storage**: Data remains accessible between Streamlit Cloud deployments
+2. **Faster Cold Starts**: The app doesn't need to build a local database at startup
+3. **Advanced Filtering**: Combine vector similarity with metadata filters
+4. **Scalability**: Easily handle larger assessment catalogs without code changes
+5. **Managed Service**: No need to maintain your own vector database infrastructure
 
 ## Features
 
@@ -39,11 +146,11 @@ The system uses a Retrieval-Augmented Generation (RAG) approach with the followi
 4. Create a `.env` file with your API keys:
 
    ```
-   OPENAI_API_KEY=your_openai_api_key_here
+   OPENAI_API_KEY=your_openai_api_key
 
    # Optional: Qdrant Cloud credentials (if using cloud storage)
    QDRANT_URL=https://your-cluster-url.qdrant.io
-   QDRANT_API_KEY=your_qdrant_api_key_here
+   QDRANT_API_KEY=your_qdrant_api_key
    ```
 
 ## Usage
